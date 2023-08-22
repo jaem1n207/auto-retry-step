@@ -1,0 +1,36 @@
+name: Retry until success
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Intentionally-Failed:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of branch is ${{ github.ref }} and repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test code on the runner."
+      - name: Retry until success
+        run: |
+          MAX_RETRIES=5
+          COUNT=0
+
+          until [ "$COUNT" -ge "$MAX_RETRIES" ]
+          do
+            echo "🔎 Checking if the website is up..."
+
+            COUNT=$((COUNT+1))
+            echo "🔁 Retry $COUNT"
+            sleep 1 # wait for 1 seconds before retrying
+          done
+
+          echo "✅ The website is up!"
+
+          if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
+            echo "❌ Max retries reached. Build failed after $COUNT attempts."
+            exit 1
+          fi
