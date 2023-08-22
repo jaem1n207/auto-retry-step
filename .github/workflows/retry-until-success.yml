@@ -21,14 +21,19 @@ jobs:
 
           until [ "$COUNT" -ge "$MAX_RETRIES" ]
           do
-            echo "🔎 Checking if the website is up..."
-
             COUNT=$((COUNT+1))
-            echo "🔁 Retry $COUNT"
+
+            echo "🔁 Retrying... Attempt $COUNT"
+
+            if [ "$COUNT" -eq 4 ]; then
+              echo "🎉 Succeeded on the 4th attempt for testing purposes!"
+              break
+            fi
+
             sleep 1 # wait for 1 seconds before retrying
           done
 
-          echo "✅ The website is up!"
+          echo "✅ Success after $COUNT retries"
 
           if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
             echo "❌ Max retries reached. Build failed after $COUNT attempts."
