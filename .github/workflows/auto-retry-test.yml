@@ -1,0 +1,36 @@
+name: Auto Retry Test
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Intentionally-Failed:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of branch is ${{ github.ref }} and repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test code on the runner."
+      - name: Intentionally fail
+        run: |
+          echo "🍎 This step will fail"
+          exit 1
+        continue-on-error: true
+      - name: Auto Retry
+        run: |
+          echo "Retrying..."
+          exit 1
+        continue-on-error: true
+      - name: Auto Retry (2)
+        if: ${{ failure() }}
+        run: |
+          echo "Retrying 2..."
+          exit 1
+        continue-on-error: true
+      - name: Succeed
+        if: ${{ failure() }}
+        run: |
+          echo "🍏 This job's status is ${{ job.status }}."
